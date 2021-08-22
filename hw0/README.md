@@ -6,7 +6,7 @@
 
 #### 2. **作业要求**
 
-本次作业提供cmakelist与main.cpp，本次作业***不需要提交***，更多的是验证环境配置是否成功以及对cmake工具的熟悉，对于本课程使用的eigen矩阵库的使用。关于本部分内容，请详细阅读[官方文档](https://eigen.tuxfamil y.org/dox/group__TutorialMatrixArithmetic.html)以获得更全面、清晰的理解。
+本次作业提供cmakelist与main.cpp，本次作业***不需要提交***，更多的是验证环境配置是否成功以及对cmake工具的熟悉，对于本课程使用的eigen矩阵库的使用。关于本部分内容，请详细阅读[官方文档](https://eigen.tuxfamily.org/dox/group__TutorialMatrixArithmetic.html)以获得更全面、清晰的理解。
 
  
 
