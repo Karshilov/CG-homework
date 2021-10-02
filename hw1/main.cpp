@@ -60,7 +60,6 @@ int main(int argc, const char** argv)
     float angle = 0;
     bool command_line = false;
     std::string filename = "output.png";
-    std::cout << "argc := " << argc << std::endl;
 
     if (argc >= 3) {
         command_line = true;
@@ -85,27 +84,18 @@ int main(int argc, const char** argv)
 
     int key = 0;
     int frame_count = 0;
-    std::cout << "command := " << command_line << std::endl;
 
     if (command_line) {
-        std::cout << "command line mode" << std::endl;
         r.clear(rst::Buffers::Color | rst::Buffers::Depth);
 
         r.set_model(get_model_matrix(angle));
         r.set_view(get_view_matrix(eye_pos));
         r.set_projection(get_projection_matrix(45, 1, 0.1, 50));
-        std::cout << "model :=" << get_model_matrix(angle) << std::endl;
-        std::cout << "projection :=" << get_projection_matrix(45, 1, 0.1, 50) << std::endl;
-        std::cout << "get MVP" << std::endl;
         r.draw(pos_id, ind_id, rst::Primitive::Triangle);
-        std::cout << "drawed" << std::endl;
         cv::Mat image(700, 700, CV_32FC3, r.frame_buffer().data());
-        std::cout << "created" << std::endl;
         image.convertTo(image, CV_8UC3, 1.0f);
 
-        std::cout << "converted" << std::endl;
         cv::imwrite(filename, image);
-        std::cout << "writed" << std::endl;
         return 0;
     }
 
