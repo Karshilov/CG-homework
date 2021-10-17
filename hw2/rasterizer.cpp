@@ -149,9 +149,9 @@ void rst::rasterizer::rasterize_triangle(const Triangle& t) {
 				auto tup = computeBarycentric2D((float)x + 0.5, (float)y + 0.5, t.v);
 				float alpha, beta, gamma;
 				std::tie(alpha, beta, gamma) = tup;
-				float w = (alpha / v[0].w() + beta / v[1].w() + gamma / v[2].w());
-				float depth = alpha * v[0].z() / v[0].w() + beta * v[1].z() / v[1].w() + gamma * v[2].z() / v[2].w();
-				depth /= w;
+				float w_reciprocal = 1.0/(alpha / v[0].w() + beta / v[1].w() + gamma / v[2].w());
+                float depth = alpha * v[0].z() / v[0].w() + beta * v[1].z() / v[1].w() + gamma * v[2].z() / v[2].w();
+                depth *= w_reciprocal;
 
 				if (depth_buf[get_index(x, y)] > depth) {
 					Vector3f color = t.getColor();
