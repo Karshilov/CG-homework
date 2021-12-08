@@ -1,3 +1,4 @@
 build/
 dist/
 *DS_*
+.vs_code/
