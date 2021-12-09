@@ -1,0 +1,12 @@
+{
+  "name": "final_project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "tsc && poi index.html --serve"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
