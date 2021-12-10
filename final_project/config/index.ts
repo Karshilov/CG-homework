@@ -1,4 +1,4 @@
-type Config = {
+export type Config = {
     bg: {
         r: number,
         g: number,
