@@ -2,6 +2,13 @@ import config from "./config";
 import getWebGLContext from "./context";
 
 (() => {
+  const isMobile = () => {
+    return /Mobi|Android/i.test(navigator.userAgent);
+  };
+  if (isMobile()) {
+    alert("暂不打算支持移动端");
+    return;
+  }
   const canvas = document.getElementById("fluid")! as HTMLCanvasElement;
   const root = document.getElementById("root")!;
   const prevStyle = root.getAttribute("style")!;
@@ -11,4 +18,9 @@ import getWebGLContext from "./context";
       `background: rgba(${config.bg.r}, ${config.bg.g}, ${config.bg.b}, ${config.bg.a});`
   );
   const { gl, ext } = getWebGLContext(canvas);
+  if (!gl) {
+    alert("不支持webgl")
+    return;
+  }
+  gl.clearColor(config.bg.r, config.bg.g, config.bg.b, config.bg.a);
 })();

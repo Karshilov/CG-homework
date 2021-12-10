@@ -1,6 +1,13 @@
 import config from "./config";
 import getWebGLContext from "./context";
 (function () {
+    var isMobile = function () {
+        return /Mobi|Android/i.test(navigator.userAgent);
+    };
+    if (isMobile()) {
+        alert("暂不打算支持移动端");
+        return;
+    }
     var canvas = document.getElementById("fluid");
     var root = document.getElementById("root");
     var prevStyle = root.getAttribute("style");
