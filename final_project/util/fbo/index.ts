@@ -1,4 +1,6 @@
-function initFramebuffers(
+import { Material } from "../material";
+
+export function initFramebuffers(
   gl: any,
   config: any,
   ext: any,
@@ -89,16 +91,16 @@ function initFramebuffers(
     gl.NEAREST,
     gl
   );
-  return { 
+  return {
     dye,
     divergence,
     velocity,
     curl,
     pressure,
-  }
+  };
 }
 
-function createFBO(
+export function createFBO(
   w: number,
   h: number,
   internalFormat: any,
@@ -146,7 +148,7 @@ function createFBO(
   };
 }
 
-function createDoubleFBO(
+export function createDoubleFBO(
   w: number,
   h: number,
   internalFormat: any,
@@ -183,7 +185,40 @@ function createDoubleFBO(
   };
 }
 
-function resizeFBO(
+export const blitGen = (gl: WebGLRenderingContext | WebGL2RenderingContext) => {
+  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+  gl.bufferData(
+    gl.ARRAY_BUFFER,
+    new Float32Array([-1, -1, -1, 1, 1, 1, 1, -1]),
+    gl.STATIC_DRAW
+  );
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer());
+  gl.bufferData(
+    gl.ELEMENT_ARRAY_BUFFER,
+    new Uint16Array([0, 1, 2, 0, 2, 3]),
+    gl.STATIC_DRAW
+  );
+  gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+  gl.enableVertexAttribArray(0);
+
+  return (target: any, clear = false) => {
+    if (target == null) {
+      gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    } else {
+      gl.viewport(0, 0, target.width, target.height);
+      gl.bindFramebuffer(gl.FRAMEBUFFER, target.fbo);
+    }
+    if (clear) {
+      gl.clearColor(0.0, 0.0, 0.0, 1.0);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+    }
+    // CHECK_FRAMEBUFFER_STATUS();
+    gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0);
+  };
+};
+
+export function resizeFBO(
   target: any,
   w: number,
   h: number,
@@ -197,11 +232,11 @@ function resizeFBO(
   let newFBO = createFBO(w, h, internalFormat, format, type, param, gl);
   copyMaterial.bind(gl);
   gl.uniform1i(copyMaterial.uniforms.uTexture, target.attach(0));
-  // blit(newFBO);
+  blitGen(gl)(newFBO);
   return newFBO;
 }
 
-function resizeDoubleFBO(
+export function resizeDoubleFBO(
   target: any,
   w: number,
   h: number,
@@ -232,7 +267,7 @@ function resizeDoubleFBO(
   return target;
 }
 
-function createTextureAsync(gl: any, url: string) {
+export function createTextureAsync(gl: any, url: string) {
   let texture = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, texture);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
@@ -274,7 +309,7 @@ function createTextureAsync(gl: any, url: string) {
   return obj;
 }
 
-function getResolution(gl: any, resolution: number): any {
+export function getResolution(gl: any, resolution: number): any {
   let aspectRatio = gl.drawingBufferWidth / gl.drawingBufferHeight;
   if (aspectRatio < 1) aspectRatio = 1.0 / aspectRatio;
 
@@ -286,14 +321,14 @@ function getResolution(gl: any, resolution: number): any {
   else return { width: min, height: max };
 }
 
-function getTextureScale(texture: any, width: number, height: number) {
+export function getTextureScale(texture: any, width: number, height: number) {
   return {
     x: width / texture.width,
     y: height / texture.height,
   };
 }
 
-function scaleByPixelRatio(input: number) {
+export function scaleByPixelRatio(input: number) {
   let pixelRatio = window.devicePixelRatio || 1;
   return Math.floor(input * pixelRatio);
 }

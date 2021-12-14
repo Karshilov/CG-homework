@@ -1,5 +1,5 @@
 // 材质
-class Material {
+export class Material {
   vertexShader: WebGLShader;
   fragmentShader: WebGLShader;
   program: WebGLProgram;
