@@ -12,7 +12,7 @@ export const compileShader = (gl: WebGLRenderingContext | WebGL2RenderingContext
 export const baseVertexShader = `
     precision highp float;
 
-    attribute vec2 aPosition;
+    attribute vec2 aPosition; // 原始坐标
     varying vec2 vUv;
     varying vec2 vL;
     varying vec2 vR;
@@ -21,47 +21,12 @@ export const baseVertexShader = `
     uniform vec2 texelSize;
 
     void main () {
-        vUv = aPosition * 0.5 + 0.5;
-        vL = vUv - vec2(texelSize.x, 0.0);
-        vR = vUv + vec2(texelSize.x, 0.0);
-        vT = vUv + vec2(0.0, texelSize.y);
-        vB = vUv - vec2(0.0, texelSize.y);
+        vUv = aPosition * 0.5 + 0.5; // 还原采样坐标
+        vL = vUv - vec2(texelSize.x, 0.0); //左端点
+        vR = vUv + vec2(texelSize.x, 0.0); //右端点
+        vT = vUv + vec2(0.0, texelSize.y); //上端点
+        vB = vUv - vec2(0.0, texelSize.y); //下端点
         gl_Position = vec4(aPosition, 0.0, 1.0);
-    }
-`;
-
-export const blurVertexShader = `
-    precision highp float;
-
-    attribute vec2 aPosition;
-    varying vec2 vUv;
-    varying vec2 vL;
-    varying vec2 vR;
-    uniform vec2 texelSize;
-
-    void main () {
-        vUv = aPosition * 0.5 + 0.5;
-        float offset = 1.33333333;
-        vL = vUv - texelSize * offset;
-        vR = vUv + texelSize * offset;
-        gl_Position = vec4(aPosition, 0.0, 1.0);
-    }
-`;
-
-export const blurShader = `
-    precision mediump float;
-    precision mediump sampler2D;
-
-    varying vec2 vUv;
-    varying vec2 vL;
-    varying vec2 vR;
-    uniform sampler2D uTexture;
-
-    void main () {
-        vec4 sum = texture2D(uTexture, vUv) * 0.29411764;
-        sum += texture2D(uTexture, vL) * 0.35294117;
-        sum += texture2D(uTexture, vR) * 0.35294117;
-        gl_FragColor = sum;
     }
 `;
 
@@ -110,19 +75,11 @@ export const displayShader = `
     varying vec2 vT;
     varying vec2 vB;
     uniform sampler2D uTexture;
-    uniform sampler2D uDithering;
-    uniform vec2 ditherScale;
-    uniform vec2 texelSize;
-
-    vec3 linearToGamma (vec3 color) {
-        color = max(color, vec3(0));
-        return max(1.055 * pow(color, vec3(0.416666667)) - 0.055, vec3(0));
-    }
 
     void main () {
         vec3 c = texture2D(uTexture, vUv).rgb;
 
-        float a = max(c.r, max(c.g, c.b));
+        float a = 1.0;
         gl_FragColor = vec4(c, a);
     }
 `;
@@ -158,20 +115,6 @@ export const advectionShader = `
     uniform vec2 dyeTexelSize;
     uniform float dt;
     uniform float dissipation;
-
-    vec4 bilerp (sampler2D sam, vec2 uv, vec2 tsize) {
-        vec2 st = uv / tsize - 0.5;
-
-        vec2 iuv = floor(st);
-        vec2 fuv = fract(st);
-
-        vec4 a = texture2D(sam, (iuv + vec2(0.5, 0.5)) * tsize);
-        vec4 b = texture2D(sam, (iuv + vec2(1.5, 0.5)) * tsize);
-        vec4 c = texture2D(sam, (iuv + vec2(0.5, 1.5)) * tsize);
-        vec4 d = texture2D(sam, (iuv + vec2(1.5, 1.5)) * tsize);
-
-        return mix(mix(a, b, fuv.x), mix(c, d, fuv.x), fuv.y);
-    }
 
     void main () {
         vec2 coord = vUv - dt * texture2D(uVelocity, vUv).xy * texelSize;

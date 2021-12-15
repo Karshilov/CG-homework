@@ -215,6 +215,11 @@ export const blitGen = (gl: WebGLRenderingContext | WebGL2RenderingContext) => {
     }
     // CHECK_FRAMEBUFFER_STATUS();
     gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0);
+    // 这里的绘图目的大概如下：
+    // 四个顶点分别是裁剪空间的四个顶点
+    // 首先绘制0, 1, 2三个顶点构成的三角形，这就是左下到右上的上三角
+    // 然后绘制0, 2, 3三个顶点构成的三角形，这就是左下到右上的下三角
+    // 这样就相当于更新了整个裁剪空间的点
   };
 };
 

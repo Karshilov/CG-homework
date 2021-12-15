@@ -3,8 +3,6 @@ import getWebGLContext from "./context";
 import {
   advectionShader as advectionShaderSource,
   baseVertexShader as baseVertexShaderSource,
-  blurShader as blurShaderSource,
-  blurVertexShader as blurVertexShaderSource,
   clearShader as clearShaderSource,
   colorShader as colorShaderSource,
   copyShader as copyShaderSource,
@@ -68,17 +66,11 @@ class pointerPrototype {
   }
   gl!.clearColor(config.bg.r, config.bg.g, config.bg.b, config.bg.a);
 
-  const blurVertexShader = compileShader(
-    gl,
-    gl!.VERTEX_SHADER,
-    blurVertexShaderSource
-  );
   const baseVertexShader = compileShader(
     gl,
     gl!.VERTEX_SHADER,
     baseVertexShaderSource
   );
-  const blurShader = compileShader(gl, gl!.FRAGMENT_SHADER, blurShaderSource);
   const copyShader = compileShader(gl, gl!.FRAGMENT_SHADER, copyShaderSource);
   const clearShader = compileShader(gl, gl!.FRAGMENT_SHADER, clearShaderSource);
   const colorShader = compileShader(gl, gl!.FRAGMENT_SHADER, colorShaderSource);
@@ -115,7 +107,6 @@ class pointerPrototype {
     displayShaderSource
   );
 
-  const blurMaterial = new Material(blurVertexShader, blurShader, gl);
   const copyMaterial = new Material(baseVertexShader, copyShader, gl);
   const clearMaterial = new Material(baseVertexShader, clearShader, gl);
   const colorMaterial = new Material(baseVertexShader, colorShader, gl);

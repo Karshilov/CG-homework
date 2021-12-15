@@ -1,6 +1,6 @@
 import config from "./config";
 import getWebGLContext from "./context";
-import { advectionShader as advectionShaderSource, baseVertexShader as baseVertexShaderSource, blurShader as blurShaderSource, blurVertexShader as blurVertexShaderSource, clearShader as clearShaderSource, colorShader as colorShaderSource, copyShader as copyShaderSource, curlShader as curlShaderSource, displayShader as displayShaderSource, divergenceShader as divergenceShaderSource, gradientSubtractShader as gradientSubtractShaderSource, pressureShader as pressureShaderSource, splatShader as splatShaderSource, vorticityShader as vorticityShaderSource, compileShader, } from "./util/shader";
+import { advectionShader as advectionShaderSource, baseVertexShader as baseVertexShaderSource, clearShader as clearShaderSource, colorShader as colorShaderSource, copyShader as copyShaderSource, curlShader as curlShaderSource, displayShader as displayShaderSource, divergenceShader as divergenceShaderSource, gradientSubtractShader as gradientSubtractShaderSource, pressureShader as pressureShaderSource, splatShader as splatShaderSource, vorticityShader as vorticityShaderSource, compileShader, } from "./util/shader";
 import { Material } from "./util/material";
 import { blitGen, initFramebuffers, scaleByPixelRatio } from "./util/fbo";
 var pointerPrototype = /** @class */ (function () {
@@ -37,9 +37,7 @@ var pointerPrototype = /** @class */ (function () {
         return;
     }
     gl.clearColor(config.bg.r, config.bg.g, config.bg.b, config.bg.a);
-    var blurVertexShader = compileShader(gl, gl.VERTEX_SHADER, blurVertexShaderSource);
     var baseVertexShader = compileShader(gl, gl.VERTEX_SHADER, baseVertexShaderSource);
-    var blurShader = compileShader(gl, gl.FRAGMENT_SHADER, blurShaderSource);
     var copyShader = compileShader(gl, gl.FRAGMENT_SHADER, copyShaderSource);
     var clearShader = compileShader(gl, gl.FRAGMENT_SHADER, clearShaderSource);
     var colorShader = compileShader(gl, gl.FRAGMENT_SHADER, colorShaderSource);
@@ -51,7 +49,6 @@ var pointerPrototype = /** @class */ (function () {
     var pressureShader = compileShader(gl, gl.FRAGMENT_SHADER, pressureShaderSource);
     var gradientSubtractShader = compileShader(gl, gl.FRAGMENT_SHADER, gradientSubtractShaderSource);
     var displayShader = compileShader(gl, gl.FRAGMENT_SHADER, displayShaderSource);
-    var blurMaterial = new Material(blurVertexShader, blurShader, gl);
     var copyMaterial = new Material(baseVertexShader, copyShader, gl);
     var clearMaterial = new Material(baseVertexShader, clearShader, gl);
     var colorMaterial = new Material(baseVertexShader, colorShader, gl);
@@ -200,22 +197,9 @@ var pointerPrototype = /** @class */ (function () {
         blitGen(gl)(target);
     }
     function drawDisplay(target) {
-        // let width = target == null ? gl!.drawingBufferWidth : target.width;
-        // let height = target == null ? gl!.drawingBufferHeight : target.height;
         displayMaterial.bind(gl);
         gl.uniform1i(displayMaterial.uniforms.uTexture, dye.read.attach(0));
         blitGen(gl)(target);
-    }
-    function blur(target, temp, iterations) {
-        blurMaterial.bind(gl);
-        for (var i = 0; i < iterations; i++) {
-            gl.uniform2f(blurMaterial.uniforms.texelSize, target.texelSizeX, 0.0);
-            gl.uniform1i(blurMaterial.uniforms.uTexture, target.attach(0));
-            blitGen(gl)(temp);
-            gl.uniform2f(blurMaterial.uniforms.texelSize, 0.0, target.texelSizeY);
-            gl.uniform1i(blurMaterial.uniforms.uTexture, temp.attach(0));
-            blitGen(gl)(target);
-        }
     }
     function splatPointer(pointer) {
         var dx = pointer.deltaX * config.SPLAT_FORCE;
