@@ -75,7 +75,7 @@ int main()
 
             return 0;
         }
-
+        //!WP:XtbKiicz3i6
         cv::imshow("Bezier Curve", window);
         key = cv::waitKey(20);
     }

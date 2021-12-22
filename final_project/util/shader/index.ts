@@ -194,7 +194,9 @@ export const vorticityShader = `
         float C = texture2D(uCurl, vUv).x;
 
         vec2 force = 0.5 * vec2(abs(T) - abs(B), abs(R) - abs(L));
+        // 涡量(vorticity)是角速度的两倍，所以 * 0.5
         force /= length(force) + 0.0001;
+        // eta / |eta| = force， eta = delta(omega)
         force *= curl * C;
         force.y *= -1.0;
 

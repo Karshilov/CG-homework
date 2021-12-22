@@ -6,3 +6,6 @@ exp
 test.js
 test.sh
 node_modules/
+*.docx
+*.pdf
+*.zip
